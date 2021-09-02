@@ -1,7 +1,8 @@
 from huobi.constant import *
 from huobi.model.trade import *
 from huobi.utils.input_checker import *
-
+import aiohttp
+import asyncio
 
 class TradeClient(object):
 
@@ -15,6 +16,10 @@ class TradeClient(object):
             init_log: to init logger
         """
         self.__kwargs = kwargs
+        self.loop = asyncio.get_event_loop()
+        self.session = aiohttp.ClientSession(
+            loop=self.loop,
+        )
 
     def get_feerate(self, symbols: 'str') -> list:
         """
@@ -323,6 +328,14 @@ class TradeClient(object):
         }
 
         return params
+
+    async def async_create_order(self, symbol: 'str', account_id: 'int', order_type: 'OrderType', amount: 'float',
+                     price: 'float', source:'str', client_order_id=None, stop_price=None, operator=None) -> int:
+
+        params = self.create_order_param_check(symbol, account_id, order_type, amount,
+                     price, source, client_order_id, stop_price, operator)
+        from huobi.service.trade.post_create_order import PostCreateOrderService
+        return await PostCreateOrderService(params).async_request(self.session,**self.__kwargs)
 
     def create_order(self, symbol: 'str', account_id: 'int', order_type: 'OrderType', amount: 'float',
                      price: 'float', source:'str', client_order_id=None, stop_price=None, operator=None) -> int:

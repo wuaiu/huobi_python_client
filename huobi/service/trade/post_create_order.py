@@ -16,6 +16,13 @@ class PostCreateOrderService:
 
         return RestApiSyncClient(**kwargs).request_process(HttpMethod.POST_SIGN, channel, self.params, parse)
 
+    async def async_request(self,session, **kwargs):
+        channel = "/v1/order/orders/place"
+
+        def parse(dict_data):
+            return default_parse_data_as_long(dict_data, None)
+
+        return await RestApiSyncClient(**kwargs).async_request_process(session,HttpMethod.POST_SIGN, channel, self.params, parse)
 
 
 

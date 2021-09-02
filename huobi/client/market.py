@@ -3,6 +3,8 @@ from huobi.model.market import *
 from huobi.utils import *
 from huobi.utils.input_checker import check_in_list
 
+import aiohttp
+import asyncio
 
 class MarketClient(object):
 
@@ -16,6 +18,10 @@ class MarketClient(object):
             init_log: to init logger
         """
         self.__kwargs = kwargs
+        self.loop = asyncio.get_event_loop()
+        self.session = aiohttp.ClientSession(
+            loop=self.loop,
+        )
 
     def get_candlestick(self, symbol, period, size=200):
         """
@@ -99,6 +105,28 @@ class MarketClient(object):
 
         from huobi.service.market.req_candlestick import ReqCandleStickService
         ReqCandleStickService(params).subscribe(callback, error_handler, **self.__kwargs)
+
+    async def async_get_pricedepth(self, symbol: 'str', depth_type: 'str', depth_size: 'int' = None) -> PriceDepth:
+        check_symbol(symbol)
+        check_in_list(depth_type, [DepthStep.STEP0, DepthStep.STEP1, DepthStep.STEP2, DepthStep.STEP3, DepthStep.STEP4,
+                                   DepthStep.STEP5], "depth_type")
+        params = {
+            "symbol": symbol,
+            "type": depth_type,
+            # "depth": depth_size
+        }
+
+        from huobi.service.market.get_pricedepth import GetPriceDepthService
+        ret_data = await GetPriceDepthService(params).async_request(self.session,**self.__kwargs)
+
+        if depth_size is not None:
+            if (ret_data.bids is not None) and (len(ret_data.bids) > depth_size):
+                ret_data.bids = ret_data.bids[0:depth_size]
+
+            if (ret_data.asks is not None) and (len(ret_data.asks) > depth_size):
+                ret_data.asks = ret_data.asks[0:depth_size]
+
+        return ret_data
 
     def get_pricedepth(self, symbol: 'str', depth_type: 'str', depth_size: 'int' = None) -> PriceDepth:
         """

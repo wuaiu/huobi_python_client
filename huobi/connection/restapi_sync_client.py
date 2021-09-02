@@ -1,6 +1,7 @@
 import logging
 
 from huobi.connection.impl.restapi_invoker import call_sync, call_sync_perforence_test
+from huobi.connection.impl.restapi_invoker import call_async
 from huobi.connection.impl.restapi_request import RestApiRequest
 from huobi.constant import *
 from huobi.utils import *
@@ -108,6 +109,12 @@ class RestApiSyncClient(object):
         request.json_parser = parse
 
         return request
+
+    async def async_request_process(self, session,method, url, params, parse):
+        request = self.create_request(method, url, params, parse)
+        if request:
+            return await call_async(session,request)
+        return None
 
     def request_process(self, method, url, params, parse):
         if self.__performance_test is not None and self.__performance_test is True:

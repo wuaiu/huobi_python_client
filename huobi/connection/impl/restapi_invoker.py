@@ -65,6 +65,26 @@ def call_sync(request, is_checked=False):
         check_response(dict_data)
         return request.json_parser(dict_data)
 
+async def call_async(session,request,is_checked=False):
+    if request.method == "GET":
+        response = await session.get(request.host + request.url, headers=request.header)
+        # print(response.text)
+        # print(response.json())
+        if is_checked is True:
+            return response.text
+        # dict_data = json.loads(response.text)
+        dict_data = await response.json()
+        check_response(dict_data)
+        return request.json_parser(dict_data)
+
+    elif request.method == "POST":
+        response = await session.post(request.host + request.url, data=json.dumps(request.post_body), headers=request.header)
+        # print(response.text)
+        # dict_data = json.loads(response.text)
+        dict_data = await response.json()
+        check_response(dict_data)
+        return request.json_parser(dict_data)
+
 def call_sync_perforence_test(request, is_checked=False):
     if request.method == "GET":
         inner_start_time = time.time()

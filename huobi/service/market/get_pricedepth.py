@@ -17,6 +17,15 @@ class GetPriceDepthService:
 
         return RestApiSyncClient(**kwargs).request_process(HttpMethod.GET, channel, self.params, parse)
 
+    async def async_request(self,session, **kwargs):
+        channel = "/market/depth"
+
+        def parse(dict_data):
+            tick = dict_data.get("tick", {})
+            return PriceDepth.json_parse(tick)
+
+        return await RestApiSyncClient(**kwargs).async_request_process(session,HttpMethod.GET, channel, self.params, parse)
+
 
 
 
