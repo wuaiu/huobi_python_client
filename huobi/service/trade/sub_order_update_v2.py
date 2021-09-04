@@ -19,8 +19,8 @@ class SubOrderUpdateV2Service:
                 time.sleep(0.01)
 
         def parse(dict_data):
-            print(dict_data)
-            return default_parse(dict_data, OrderUpdateEvent, OrderUpdate)
+            return dict_data
+            # return default_parse(dict_data, OrderUpdateEvent, OrderUpdate)
 
         SubscribeClient(**kwargs).execute_subscribe_v2(subscription,
                                             parse,
