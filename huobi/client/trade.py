@@ -259,8 +259,8 @@ class TradeClient(object):
         """
 
         check_symbol(symbol)
-        start_date = format_date(start_date, "start_date")
-        end_date = format_date(end_date, "end_date")
+        # start_date = format_date(start_date, "start_date")
+        # end_date = format_date(end_date, "end_date")
         check_range(size, 1, 100, "size")
 
         params = {
