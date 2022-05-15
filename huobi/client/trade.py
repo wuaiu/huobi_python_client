@@ -272,7 +272,7 @@ class TradeClient(object):
             "from" : from_id,
             "direct" : direct
         }
-
+        print(params)
         from huobi.service.trade.get_match_results import GetMatchResultsService
         return GetMatchResultsService(params).request(**self.__kwargs)
 
