@@ -265,7 +265,7 @@ class TradeClient(object):
 
         params = {
             "symbol" : symbol,
-            # "start-date" : start_date,
+            "start-date" : start_date,
             "end-date" : end_date,
             "types" : order_type,
             "size" : size,
